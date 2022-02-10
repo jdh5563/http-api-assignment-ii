@@ -46,7 +46,6 @@ const sendGetOrHead = async userForm => {
     //the one provided by the form (POST). Set the headers. Content-Type
     //is the type of data we are sending. Accept is the data we would like
     //in response. Then add our FORM-URLENCODED string as the body of the request.
-
     let response = await fetch(selectedURL, {
     method: selectedMethod,
     headers: {
@@ -70,6 +69,7 @@ const init = () => {
     };
 
     const getUser = e => {
+        console.log(e);
         e.preventDefault();
         sendGetOrHead(userForm);
         return false;

@@ -1,7 +1,16 @@
+const users = {};
+
 // function to send a json object
 const respondJSON = (request, response, status, object) => {
   response.writeHead(status, { 'Content-Type': 'application/json' });
   response.write(JSON.stringify(object));
+  response.end();
+};
+
+// function to respond without json body
+// takes request, response and status code
+const respondJSONMeta = (request, response, status) => {
+  response.writeHead(status, { 'Content-Type': 'application/json' });
   response.end();
 };
 
@@ -11,7 +20,7 @@ const respondJSON = (request, response, status, object) => {
 const getUsers = (request, response) => {
   // message to send
   const responseJSON = {
-    message: 'This is a successful response',
+    users,
   };
 
   // send our json with a success status code
@@ -19,24 +28,45 @@ const getUsers = (request, response) => {
 };
 
 // function to show a bad request
-const addUser = (request, response, params) => {
-  // message to send
+const addUser = (request, response, body) => {
+  // default json message
   const responseJSON = {
-    message: 'This request has the required parameters',
+    message: 'Name and age are both required.',
   };
 
-  // if the request does not contain a valid=true query parameter
-  if (!params.valid || params.valid !== 'true') {
-    // set our error message
-    responseJSON.message = 'Missing valid query parameter set to true';
-    // give the error a consistent id
-    responseJSON.id = 'badRequest';
-    // return our json with a 400 bad request code
+  // check to make sure we have both fields
+  // We might want more validation than just checking if they exist
+  // This could easily be abused with invalid types (such as booleans, numbers, etc)
+  // If either are missing, send back an error message as a 400 badRequest
+  if (!body.name || !body.age) {
+    responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
 
-  // if the parameter is here, send json with a success status code
-  return respondJSON(request, response, 200, responseJSON);
+  // default status code to 204 updated
+  let responseCode = 204;
+
+  // If the user doesn't exist yet
+  if (!users[body.name]) {
+    // Set the status code to 201 (created) and create an empty user
+    responseCode = 201;
+    users[body.name] = {};
+  }
+
+  // add or update fields for this user name
+  users[body.name].name = body.name;
+  users[body.name].age = body.age;
+
+  // if response is created, then set our created message
+  // and sent response with a message
+  if (responseCode === 201) {
+    responseJSON.message = 'Created Successfully';
+    return respondJSON(request, response, responseCode, responseJSON);
+  }
+  // 204 has an empty payload, just a success
+  // It cannot have a body, so we just send a 204 without a message
+  // 204 will not alter the browser in any way!!!
+  return respondJSONMeta(request, response, responseCode);
 };
 
 // function to show not found error
