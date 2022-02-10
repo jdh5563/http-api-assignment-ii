@@ -8,13 +8,35 @@ const jsonHandler = require('./jsonResponses.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
+// https://github.com/IGM-RichMedia-at-RIT/body-parse-example-done/blob/master/src/server.js
+const parseBody = (request, response, handler) => {
+  const body = [];
+
+  request.on('error', (err) => {
+    console.dir(err);
+    response.statusCode = 400;
+    response.end();
+  });
+
+  request.on('data', (chunk) => {
+    body.push(chunk);
+  });
+
+  request.on('end', () => {
+    const bodyString = Buffer.concat(body).toString();
+    const bodyParams = query.parse(bodyString);
+
+    handler(request, response, bodyParams);
+  });
+};
+
 // Calls different functions depending on what was requested
 const urlStruct = {
   '/': htmlHandler.getIndex,
   '/style.css': cssHandler.getStyle,
   '/client.js': jsHandler.getJS,
   '/getUsers': jsonHandler.getUsers,
-  '/addUser': jsonHandler.addUser,
+  '/addUser': parseBody,
   '/notReal': jsonHandler.notFound,
   notFound: jsonHandler.notFound,
 };
@@ -24,13 +46,8 @@ const onRequest = (request, response) => {
   // Parse the url from the request
   const parsedURL = url.parse(request.url);
 
-  // Get any query parameters
-  const params = query.parse(parsedURL.query);
-
-  // If the parsed url matches one of the urls in 'urlStruct' call its corresponding function
-  // Otherwise, send them to the 404 page
   const func = urlStruct[parsedURL.pathname] || urlStruct.notFound;
-  func(request, response, params);
+  func(request, response, jsonHandler.addUser);
 };
 
 http.createServer(onRequest).listen(port, () => {

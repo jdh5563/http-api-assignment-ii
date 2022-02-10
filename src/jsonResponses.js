@@ -20,7 +20,7 @@ const respondJSONMeta = (request, response, status) => {
 const getUsers = (request, response) => {
   // message to send
   const responseJSON = {
-    users,
+    message: users,
   };
 
   // send our json with a success status code

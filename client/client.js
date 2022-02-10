@@ -4,14 +4,25 @@ let p;
 
 // Handles displaying responses
 const handleResponse = async (response) => {
-    const responseText = await response.text();
+    const responseJSON = await response.json();
 
-    console.log(responseText);
-
-    // Parse the json back into a javascript object, and display the data.
-    let parsedResponse = JSON.parse(responseText);
-    statusCode.innerHTML = `<b>${codes.options[codes.selectedIndex].textContent}</b>`;
-    message.textContent = `Message: ${parsedResponse.message}`;
+    switch(response.status){
+        case 200:
+            h1.innerHTML = `<b>Success</b>`;
+            break;
+        case 201:
+            h1.innerHTML = `<b>Created</b>`;
+            break;
+        case 204:
+            h1.innerHTML = `<b>Updated (No Content)</b>`;
+            break;
+        case 400:
+            h1.innerHTML = `<b>Bad Request</b>`;
+            return;
+        case 404:
+            h1.innerHTML = `<b>Not Found</b>`;
+            return;
+    }
 };
 
 const sendPost = async nameForm => {
@@ -79,8 +90,8 @@ const init = () => {
         return false;
     };
 
-    nameForm.submit = addUser;
-    userForm.submit = getUser;
+    nameForm.addEventListener('submit', addUser);
+    userForm.addEventListener('submit', getUser);
 
     h1 = document.createElement('h1');
     p = document.createElement('p');
