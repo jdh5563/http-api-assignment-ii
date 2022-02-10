@@ -1,3 +1,7 @@
+const content = document.querySelector('#content');
+let h1;
+let p;
+
 // Handles displaying responses
 const handleResponse = async (response) => {
     const responseText = await response.text();
@@ -77,6 +81,12 @@ const init = () => {
 
     nameForm.submit = addUser;
     userForm.submit = getUser;
+
+    h1 = document.createElement('h1');
+    p = document.createElement('p');
+
+    content.appendChild(h1);
+    content.appendChild(p);
 };
 
 init();
