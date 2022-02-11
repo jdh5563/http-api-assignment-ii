@@ -3,8 +3,13 @@ let h1;
 let p;
 
 // Handles displaying responses
-const handleResponse = async (response) => {
-    const responseJSON = await response.json();
+const handleResponse = async (response, method) => {
+    p.innerHTML = ``;
+
+    if(method != 'head' && response.status != 204){
+        const responseJSON = await response.json();
+        p.innerHTML = JSON.stringify(responseJSON.message);
+    }
 
     switch(response.status){
         case 200:
@@ -49,7 +54,7 @@ const sendPost = async nameForm => {
     });
 
     //Once we have a response, handle it.
-    handleResponse(response);
+    handleResponse(response, nameMethod);
 };
 
 const sendGetOrHead = async userForm => {
@@ -69,7 +74,7 @@ const sendGetOrHead = async userForm => {
     });
 
     //Once we have a response, handle it.
-    handleResponse(response);
+    handleResponse(response, selectedMethod);
 };
 
 // Override the functionality of the submit buttons to send our requests
@@ -84,7 +89,6 @@ const init = () => {
     };
 
     const getUser = e => {
-        console.log(e);
         e.preventDefault();
         sendGetOrHead(userForm);
         return false;
