@@ -9,6 +9,7 @@ const jsonHandler = require('./jsonResponses.js');
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 // https://github.com/IGM-RichMedia-at-RIT/body-parse-example-done/blob/master/src/server.js
+// Parses the body of a response chunk by chunk then sends it to the given handler
 const parseBody = (request, response, handler) => {
   const body = [];
 
@@ -50,6 +51,7 @@ const onRequest = (request, response) => {
   func(request, response, jsonHandler.addUser);
 };
 
+// Create the server
 http.createServer(onRequest).listen(port, () => {
   console.log(`Listening on 127.0.0.1:${port}`);
 });

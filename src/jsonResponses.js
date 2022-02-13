@@ -14,9 +14,7 @@ const respondJSONMeta = (request, response, status) => {
   response.end();
 };
 
-// TODO: Implement 201 and 204 codes
-
-// function to show a success status code
+// Gets the list of registered users
 const getUsers = (request, response) => {
   // message to send
   const responseJSON = {
@@ -27,7 +25,8 @@ const getUsers = (request, response) => {
   return respondJSON(request, response, 200, responseJSON);
 };
 
-// function to show a bad request
+// Adds a user to the user list if all required parameters are present
+// https://github.com/IGM-RichMedia-at-RIT/body-parse-example-done/blob/master/src/jsonResponses.js
 const addUser = (request, response, body) => {
   // default json message
   const responseJSON = {
@@ -39,7 +38,7 @@ const addUser = (request, response, body) => {
   // This could easily be abused with invalid types (such as booleans, numbers, etc)
   // If either are missing, send back an error message as a 400 badRequest
   if (!body.name || !body.age) {
-    responseJSON.id = 'missingParams';
+    responseJSON.id = 'addUserMissingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
 
@@ -81,9 +80,6 @@ const notFound = (request, response) => {
   return respondJSON(request, response, 404, responseJSON);
 };
 
-// exports to set functions to public.
-// In this syntax, you can do getIndex:getIndex, but if they
-// are the same name, you can short handle to just getIndex,
 module.exports = {
   getUsers,
   addUser,

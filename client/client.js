@@ -6,11 +6,15 @@ let p;
 const handleResponse = async (response, method) => {
     p.innerHTML = ``;
 
+    // If there is a body, retrieve it and display it
     if(method != 'head' && response.status != 204){
         const responseJSON = await response.json();
         p.innerHTML = JSON.stringify(responseJSON.message);
+
+        console.log(responseJSON);
     }
 
+    // Display the status code name
     switch(response.status){
         case 200:
             h1.innerHTML = `<b>Success</b>`;
@@ -30,6 +34,7 @@ const handleResponse = async (response, method) => {
     }
 };
 
+// Send a post request with the (hopefully) entered information, then handle the response
 const sendPost = async nameForm => {
     //Grab all the info from the form
     const nameAction = nameForm.getAttribute('action');
@@ -41,10 +46,7 @@ const sendPost = async nameForm => {
     //Build a data string in the FORM-URLENCODED format.
     const formData = `name=${nameField.value}&age=${ageField.value}`;
 
-    //Make a fetch request and await a response. Set the method to
-    //the one provided by the form (POST). Set the headers. Content-Type
-    //is the type of data we are sending. Accept is the data we would like
-    //in response. Then add our FORM-URLENCODED string as the body of the request.
+    // Fetch a response
     let response = await fetch(nameAction, {
     method: nameMethod,
     headers: {
@@ -57,15 +59,13 @@ const sendPost = async nameForm => {
     handleResponse(response, nameMethod);
 };
 
+// Send a get/head request for the list of users, then handle the response
 const sendGetOrHead = async userForm => {
     //Grab all the info from the form
     const selectedURL = userForm.querySelector('#urlField').value;
     const selectedMethod = userForm.querySelector('#methodSelect').value;
 
-    //Make a fetch request and await a response. Set the method to
-    //the one provided by the form (POST). Set the headers. Content-Type
-    //is the type of data we are sending. Accept is the data we would like
-    //in response. Then add our FORM-URLENCODED string as the body of the request.
+    // Fetch a response
     let response = await fetch(selectedURL, {
     method: selectedMethod,
     headers: {
